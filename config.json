@@ -1,0 +1,18 @@
+{
+  "google": {
+    "application-credentials-file": "google-app-credentials.json"
+  },
+  "twitter": {
+    "apiKey": "",
+    "apiSecret": "",
+    "accessToken": "",
+    "accessSecret": "",
+    "userId": "2907774137"
+  },
+  "contextMonster": {
+    "apiKey": "",
+    "apiUrl": "https://context.monster/api/tweet/create.php",
+    "reportUrl": "https://context.monster/",
+    "includeUrl": true
+  }
+}
