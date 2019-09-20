@@ -1,6 +1,9 @@
+import datetime
 import io
 import json
 import os
+import queue
+
 import requests
 import tweepy
 from google.cloud import vision
@@ -21,11 +24,18 @@ api = tweepy.API(auth, wait_on_rate_limit=True,
                  wait_on_rate_limit_notify=True)
 
 
+class ResponseTweet:
+
+    def __init__(self, text, in_response):
+        self.text = text
+        self.in_response = in_response
+
+
 class TweetStreamListener(tweepy.StreamListener):
 
     def on_status(self, status):
         if (status.user.id == int(config['twitter']['userId'])
-                and 'media' in status.entities and not status.retweeted):
+                and 'media' in status.entities and not hasattr(status, 'retweeted_status')):
             image = status.entities['media'][0]['media_url']
             report(annotate(image), image, status.id)
 
@@ -48,11 +58,13 @@ def annotate(path):
     return web_detection
 
 
-def report(annotations, imageUrl, tweetId):
+def report(annotations, image_url, tweet_id):
+    global counter, id_length
     pages = []
     matches = []
-    partialMatches = []
+    partial_matches = []
     keywords = {}
+    include_url = False
     if annotations.pages_with_matching_images:
         for page in annotations.pages_with_matching_images:
             pages.append(page.url)
@@ -63,13 +75,14 @@ def report(annotations, imageUrl, tweetId):
 
     if annotations.partial_matching_images:
         for image in annotations.partial_matching_images:
-            partialMatches.append(image.url)
+            partial_matches.append(image.url)
 
     if annotations.web_entities:
+        max_score = annotations.web_entities[0].score
         for entity in annotations.web_entities:
             if len(entity.description) > 0:
                 keywords[entity.description] = entity.score
-        limit = 230 if config['contextMonster']['includeUrl'] else 265
+        limit = 230 if include_url else 265 - id_length
         tweet = '. @archillect Related keywords: "'
         for entity in annotations.web_entities:
             keyword = entity.description
@@ -78,27 +91,40 @@ def report(annotations, imageUrl, tweetId):
                     tweet += keyword + ', '
             else:
                 break
-        data = {
-            'image': imageUrl,
-            'pages': pages,
-            'matches': matches,
-            'partialMatches': partialMatches,
-            'keywords': keywords,
-            'archillectTweet': tweetId,
-            'tweet': 0,
-            'key': config['contextMonster']['apiKey']
-        }
-        r = requests.post(url=config['contextMonster']['apiUrl'], json=data)
-        if r.status_code == requests.codes.created:
-            tweet = tweet[:-2]
-            if config['contextMonster']['includeUrl']:
-                tweet += '" Full report: ' + config['contextMonster']['reportUrl'] + str(json.loads(r.text)['id'])
-            else:
-                tweet += '"'
-            api.update_status(tweet, in_reply_to_status_id=tweetId)
-            print(tweet)
+        if max_score > 0.35:
+            data = {
+                'image': image_url,
+                'pages': pages,
+                'matches': matches,
+                'partialMatches': partial_matches,
+                'keywords': keywords,
+                'archillectTweet': int(tweet_id),
+                'tweet': 0,
+                'key': config['contextMonster']['apiKey']
+            }
+            r = requests.post(url=config['contextMonster']['apiUrl'], json=data)
+            if r.status_code == requests.codes.created:
+                tweet = tweet[:-2]
+                monster_id = json.loads(r.text)['id']
+                if include_url:
+                    tweet += '" Full report: ' + config['contextMonster']['reportUrl'] + str(monster_id)
+                else:
+                    tweet += '" Ref: ' + str(monster_id)
+
+                if counter % 3 == 0:
+                    while not q.empty():
+                        enqueued = q.get()
+                        api.update_status(enqueued.text, in_reply_to_status_id=enqueued.in_response)
+                        print(datetime.datetime.now().strftime("%H:%M:%S") + " Published: " + enqueued.text)
+                q.put(ResponseTweet(tweet, tweet_id))
+                print(datetime.datetime.now().strftime("%H:%M:%S") + " Added to queue: " + tweet)
+                counter += 1
+                id_length = len(str(monster_id + 1))
 
 
+counter = 0
+id_length = 3
+q = queue.Queue()
 tweetStreamListener = TweetStreamListener()
 myStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
 myStream.filter(follow=[config['twitter']['userId']])
