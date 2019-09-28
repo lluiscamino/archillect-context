@@ -12,7 +12,6 @@
   "contextMonster": {
     "apiKey": "",
     "apiUrl": "https://context.monster/api/tweet/create.php",
-    "reportUrl": "https://context.monster/",
-    "includeUrl": true
+    "reportUrl": "https://context.monster/"
   }
 }
