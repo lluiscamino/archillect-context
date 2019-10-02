@@ -1,17 +1,16 @@
 # Archillect Context Bot
 Source code for the bot [@archicontext](https://twitter.com/archicontext).
 
-Archillect Context gets every image that [@archillect](https://twitter.com/archillect) 
-tweets via the Twitter API and gets details like web pages which include the same or a similar
-image and keywords related to the it using the [Google Cloud Vision API](https://cloud.google.com/vision/).
+Archillect Context gets images posted by [@archillect](https://twitter.com/archillect) via the Twitter API and fetches related keywords and similar pictures from the [Google Vision API](https://cloud.google.com/vision/).
 
-In this version, there's a delay between [@archillect](https://twitter.com/archillect)'s posts
-and this bots' response.
-
-Then, it posts this information on Twitter as a response to [@archillect](https://twitter.com/archillect)'s
+Then, it posts this information on Twitter as a response to [@archillect](https://twitter.com/archillect)'s 
 original tweet and stores the image and its details in the [context.monster](https://context.monster) database. 
-Here's an example of tweet that the bot would post:
+
+The bot misses half of the images that [@archillect](https://twitter.com/archillect) posts to avoid being banned. There's also a delay between [@archillect](https://twitter.com/archillect)'s tweets and the bot's response.
+
+Here's an example of a tweet that the bot has posted:
 ```
 . @archillect
- Related keywords: "Car, Touring car racing, British Touring Car Championship, Group B, Racing, Auto racing, Compact car, Race track, Motorsport, Stock car racing" Full report: https://context.monster/19
+ Related keywords: "International Space Station, Space debris, RemoveDEBRIS, Space, Outer space, NASA, Spacecraft, Satellite, Space station" Ref: 588
 ```
+More information about any picture can be found at [context.monster](https://context.monster), using the Ref. number. For instance: [https://context.monster/588](https://context.monster/588)
