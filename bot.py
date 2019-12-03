@@ -23,6 +23,8 @@ auth.set_access_token(config['twitter']['accessToken'], config['twitter']['acces
 api = tweepy.API(auth, wait_on_rate_limit=True,
                  wait_on_rate_limit_notify=True)
 
+bannedKeywords = ['image', 'gif', 'giphy', 'tumblr', 'imgur']
+
 
 class ResponseTweet:
 
@@ -88,7 +90,7 @@ def report(annotations, image_url, tweet_id):
             for entity in annotations.web_entities:
                 keyword = entity.description
                 if len(tweet) + len(keyword) <= limit:
-                    if len(keyword) > 0:
+                    if len(keyword) > 0 and keyword.lower() in bannedKeywords:
                         tweet += keyword + ', '
                 else:
                     break
