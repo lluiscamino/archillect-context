@@ -61,7 +61,7 @@ def annotate(path):
 
 
 def report(annotations, image_url, tweet_id):
-    global counter, id_length
+    global counter, id_length, publish
     if counter % 2 == 0:
         pages = []
         matches = []
@@ -118,17 +118,27 @@ def report(annotations, image_url, tweet_id):
                         while not q.empty():
                             enqueued = q.get()
                             api.update_status(enqueued.text, in_reply_to_status_id=enqueued.in_response)
-                            print(datetime.datetime.now().strftime("%H:%M:%S") + " Published: " + enqueued.text)
+                            print(datetime.datetime.now().strftime('%H:%M:%S') + ' Published: ' + enqueued.text)
                     q.put(ResponseTweet(tweet, tweet_id))
-                    print(datetime.datetime.now().strftime("%H:%M:%S")
-                          + " Added to queue (" + str(q.qsize()) + "): " + tweet)
+                    print(datetime.datetime.now().strftime('%H:%M:%S')
+                          + ' Added to queue (' + str(q.qsize()) + '): ' + tweet)
                     id_length = len(str(monster_id + 1))
+
+                    if counter % 24 == 0:
+                        if publish != '':
+                            api.update_status(publish)
+                            print(datetime.datetime.now().strftime('%H:%M:%S') + ' Published')
+                        publish = [*keywords][0] + ' https://context.monster/' + str(monster_id) \
+                                  + ' https://twitter.com/archillect/status/' + str(tweet_id)
+                        print(datetime.datetime.now().strftime('%H:%M:%S') + ' Saved: ' + publish)
+
     counter += 1
 
 
 counter = 0
 id_length = 3
 q = queue.Queue()
+publish = ''
 tweetStreamListener = TweetStreamListener()
 myStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
 myStream.filter(follow=[config['twitter']['userId']])
