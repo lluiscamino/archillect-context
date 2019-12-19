@@ -23,7 +23,7 @@ auth.set_access_token(config['twitter']['accessToken'], config['twitter']['acces
 api = tweepy.API(auth, wait_on_rate_limit=True,
                  wait_on_rate_limit_notify=True)
 
-bannedKeywords = ['image', 'gif', 'giphy', 'tumblr', 'imgur', 'we heart it']
+bannedKeywords = ['image', 'gif', 'giphy', 'tumblr', 'imgur', 'we heart it', '8tracks.com']
 
 
 class ResponseTweet:
@@ -83,7 +83,7 @@ def report(annotations, image_url, tweet_id):
         if annotations.web_entities:
             max_score = annotations.web_entities[0].score
             for entity in annotations.web_entities:
-                if len(entity.description) > 0:
+                if len(entity.description) > 0 and entity.description.lower() not in bannedKeywords:
                     keywords[entity.description] = entity.score
             limit = 230 if include_url else 265 - id_length
             tweet = '. @archillect Related keywords: "'
