@@ -23,7 +23,9 @@ auth.set_access_token(config['twitter']['accessToken'], config['twitter']['acces
 api = tweepy.API(auth, wait_on_rate_limit=True,
                  wait_on_rate_limit_notify=True)
 
-bannedKeywords = ['image', 'gif', 'giphy', 'tumblr', 'imgur', 'we heart it', '8tracks.com']
+bannedKeywords = ['image', 'gif', 'giphy', 'tumblr', 'imgur', 'we heart it', '8tracks.com', 'gfycat', '/m/02j71',
+                  'wallpaper', 'imgur', 'flickr', 'blog', '8tracks.com', 'clutch.ua', 'jpeg', 'pinterest'
+                                                                                              'portable network graphics']
 
 
 class ResponseTweet:
