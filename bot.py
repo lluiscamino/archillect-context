@@ -20,12 +20,11 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config['google']['application-cre
 auth = tweepy.OAuthHandler(config['twitter']['apiKey'], config['twitter']['apiSecret'])
 auth.set_access_token(config['twitter']['accessToken'], config['twitter']['accessSecret'])
 
-api = tweepy.API(auth, wait_on_rate_limit=True,
-                 wait_on_rate_limit_notify=True)
+api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 bannedKeywords = ['image', 'gif', 'giphy', 'tumblr', 'imgur', 'we heart it', '8tracks.com', 'gfycat', '/m/02j71',
-                  'wallpaper', 'imgur', 'flickr', 'blog', '8tracks.com', 'clutch.ua', 'jpeg', 'pinterest'
-                                                                                              'portable network graphics']
+                  'wallpaper', 'imgur', 'flickr', 'blog', '8tracks.com', 'clutch.ua', 'jpeg', 'pinterest',
+                  'portable network graphics', '/m/083vt']
 
 
 class ResponseTweet:
@@ -138,7 +137,7 @@ def report(annotations, image_url, tweet_id):
 
 
 counter = 0
-id_length = 3
+id_length = 4
 q = queue.Queue()
 publish = ''
 tweetStreamListener = TweetStreamListener()
