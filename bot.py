@@ -24,7 +24,9 @@ api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 bannedKeywords = ['image', 'gif', 'giphy', 'tumblr', 'imgur', 'we heart it', '8tracks.com', 'gfycat', '/m/02j71',
                   'wallpaper', 'imgur', 'flickr', 'blog', '8tracks.com', 'clutch.ua', 'jpeg', 'pinterest',
-                  'portable network graphics', '/m/083vt']
+                  'portable network graphics', '/m/083vt', 'Automanas.lt', 'Kwejk.pl', 'Demotywatory.pl']
+
+head = {'Authorization': 'Bearer ' + config['contextMonster']['apiKey']}
 
 
 class ResponseTweet:
@@ -67,7 +69,7 @@ def report(annotations, image_url, tweet_id):
         pages = []
         matches = []
         partial_matches = []
-        keywords = {}
+        ratings = []
         include_url = False
         if annotations.pages_with_matching_images:
             for page in annotations.pages_with_matching_images:
@@ -85,7 +87,12 @@ def report(annotations, image_url, tweet_id):
             max_score = annotations.web_entities[0].score
             for entity in annotations.web_entities:
                 if len(entity.description) > 0 and entity.description.lower() not in bannedKeywords:
-                    keywords[entity.description] = entity.score
+                    ratings.append(
+                        {
+                            'keyword_text': entity.description,
+                            'rate': entity.score
+                        }
+                    )
             limit = 230 if include_url else 265 - id_length
             tweet = '. @archillect Related keywords: "'
             for entity in annotations.web_entities:
@@ -98,15 +105,13 @@ def report(annotations, image_url, tweet_id):
             if max_score > 0.35:
                 data = {
                     'image': image_url,
+                    'archillect_tweet': int(tweet_id),
                     'pages': pages,
                     'matches': matches,
-                    'partialMatches': partial_matches,
-                    'keywords': keywords,
-                    'archillectTweet': int(tweet_id),
-                    'tweet': 0,
-                    'key': config['contextMonster']['apiKey']
+                    'partial_matches': partial_matches,
+                    'ratings': ratings
                 }
-                r = requests.post(url=config['contextMonster']['apiUrl'], json=data)
+                r = requests.post(url=config['contextMonster']['apiUrl'], json=data, headers=head)
                 if r.status_code == requests.codes.created:
                     tweet = tweet[:-2]
                     monster_id = json.loads(r.text)['id']
@@ -129,7 +134,7 @@ def report(annotations, image_url, tweet_id):
                         if publish != '':
                             api.update_status(publish)
                             print(datetime.datetime.now().strftime('%H:%M:%S') + ' Published')
-                        publish = [*keywords][0] + ' https://context.monster/' + str(monster_id) \
+                        publish = ratings[0]["keyword_text"] + ' https://context.monster/' + str(monster_id) \
                                   + ' https://twitter.com/archillect/status/' + str(tweet_id)
                         print(datetime.datetime.now().strftime('%H:%M:%S') + ' Saved: ' + publish)
 
