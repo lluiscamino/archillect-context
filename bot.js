@@ -64,7 +64,7 @@ function postAllResponses() {
     }
 }
 
-function responseCallback(erscreeror, data, _r) {
+function responseCallback(error, data, _r) {
     if (error) {
         console.log(error);
     } else {
