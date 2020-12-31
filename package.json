@@ -1,0 +1,28 @@
+{
+  "name": "archillect-context",
+  "version": "1.0.0",
+  "description": "Context provider for @archillect posts",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lluiscamino/archillect-context-bot.git"
+  },
+  "keywords": [
+    "twitter-bot",
+    "archillect",
+    "image-recognition"
+  ],
+  "author": "Lluís Camino",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lluiscamino/archillect-context-bot/issues"
+  },
+  "homepage": "https://github.com/lluiscamino/archillect-context-bot#readme",
+  "dependencies": {
+    "@google-cloud/vision": "^2.1.2",
+    "twit": "^2.2.11"
+  }
+}

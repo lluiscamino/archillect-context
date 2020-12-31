@@ -1,17 +1,21 @@
 {
-  "google": {
-    "application-credentials-file": "google-app-credentials.json"
-  },
-  "twitter": {
-    "apiKey": "",
-    "apiSecret": "",
-    "accessToken": "",
-    "accessSecret": "",
-    "userId": "2907774137"
-  },
-  "contextMonster": {
-    "apiKey": "",
-    "apiUrl": "http://api.context.monster/v2/tweets",
-    "reportUrl": "https://context.monster/"
-  }
+    "google_vision_api": {
+        "application_credentials_file": ""
+    },
+    "twitter": {
+        "consumer_key": "",
+        "consumer_secret": "",
+        "access_token": "",
+        "access_token_secret": "",
+        "archillect_id": 2907774137
+    },
+    "bot": {
+        "responses_queue_max_length": 3,
+        "banned_keywords": [
+            "image", "gif", "giphy", "tumblr", "imgur", "we heart it", "gfycat", 
+            "/m/02j71", "wallpaper", "flickr", "blog", "jpeg", "pinterest", 
+            "portable network graphics", "/m/083vt"
+        ],
+        "url_regex": "(https?:\\\/\\\/)?([\\w\\-])+\\.{1}([a-zA-Z]{2,63})([\\\/\\w-]*)*\\\/?\\??([^#\\n\\r]*)?#?([^\\n\\r]*)"
+    }
 }
