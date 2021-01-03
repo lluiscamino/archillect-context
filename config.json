@@ -17,5 +17,13 @@
             "portable network graphics", "/m/083vt"
         ],
         "url_regex": "(https?:\\\/\\\/)?([\\w\\-])+\\.{1}([a-zA-Z]{2,63})([\\\/\\w-]*)*\\\/?\\??([^#\\n\\r]*)?#?([^\\n\\r]*)"
+    },
+    "mailer": {
+        "service": "gmail",
+        "auth": {
+            "user": "",
+            "pass": ""
+        },
+        "receivers": []
     }
 }

@@ -1,5 +1,6 @@
 const Twit = require('twit');
 const vision = require('@google-cloud/vision');
+const alertSender = require('./alertmailer');
 const config = require('./config.json');
 process.env['GOOGLE_APPLICATION_CREDENTIALS'] = config.google_vision_api.application_credentials_file;
 
@@ -10,9 +11,14 @@ const stream = twit.stream('statuses/filter', { follow: archillectID });
 const responsesQueue = [];
 let archillectTweets = 0;
 
+sendStartupNotification();
 stream.on('tweet', tweet => {
     handleArchillectTweet(tweet);
 });
+
+function sendStartupNotification() {
+    alertSender.mail("Bot started", "Archillect Context started");
+}
 
 async function handleArchillectTweet(tweet) {
     if (!isValidArchillectTweet(tweet)) return;
@@ -66,9 +72,11 @@ function postAllResponses() {
     }
 }
 
-function responseCallback(error, data, _r) {
+async function responseCallback(error, data, _r) {
     if (error) {
         console.log(error);
+        await alertSender.mail("Twitter API error", error);
+        process.exit(1);
     } else {
         console.log("Published: " + data.text);
     }
