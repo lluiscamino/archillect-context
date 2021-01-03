@@ -8,6 +8,7 @@ const visionClient = new vision.ImageAnnotatorClient();
 const archillectID = config.twitter.archillect_id;
 const stream = twit.stream('statuses/filter', { follow: archillectID });
 const responsesQueue = [];
+let archillectTweets = 0;
 
 stream.on('tweet', tweet => {
     handleArchillectTweet(tweet);
@@ -15,6 +16,7 @@ stream.on('tweet', tweet => {
 
 async function handleArchillectTweet(tweet) {
     if (!isValidArchillectTweet(tweet)) return;
+    if (archillectTweets++ % 2 != 0) return;
     const image = tweet.entities.media[0].media_url_https;
     const keywords = await getRelatedKeywords(image);
     const response = `.@archillect Related keywords: "${keywords.join(', ')}"`;
