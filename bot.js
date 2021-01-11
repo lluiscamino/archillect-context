@@ -1,14 +1,15 @@
-const Twit = require('twit');
-const vision = require('@google-cloud/vision');
-const database = require('./tweets_db');
-const alertSender = require('./alertmailer');
-const config = require('./config.json');
-process.env['GOOGLE_APPLICATION_CREDENTIALS'] = config.google_vision_api.application_credentials_file;
+const Twit = require("twit");
+const vision = require("@google-cloud/vision");
+const database = require("./tweets_db");
+const alertSender = require("./alertmailer");
+const config = require("./config.json");
+process.env["GOOGLE_APPLICATION_CREDENTIALS"] =
+    config.google_vision_api.application_credentials_file;
 
 const twit = new Twit(config.twitter);
 const visionClient = new vision.ImageAnnotatorClient();
 const archillectID = config.twitter.archillect_id;
-const stream = twit.stream('statuses/filter', { follow: archillectID });
+const stream = twit.stream("statuses/filter", { follow: archillectID });
 const responsesQueue = [];
 let archillectTweets = 0;
 
@@ -20,7 +21,7 @@ function sendStartupNotification() {
 }
 
 function streamTweets() {
-    stream.on('tweet', tweet => {
+    stream.on("tweet", tweet => {
         handleArchillectTweet(tweet);
     });
 }
@@ -32,15 +33,17 @@ async function handleArchillectTweet(tweet) {
     const visionResult = await getVisionResult(image);
     const keywords = getRelatedKeywords(visionResult);
     if (keywords.length === 0) return;
-    const response = `.@archillect Related keywords: "${keywords.join(', ')}"`;
+    const response = `.@archillect Related keywords: "${keywords.join(", ")}"`;
     handleResponse(tweet.id_str, response);
     database.insert(tweet, visionResult);
 }
 
 function isValidArchillectTweet(tweet) {
-    return tweet.user.id === archillectID && 
-    !tweet.hasOwnProperty('retweeted_status') &&
-    tweet.entities.media.length === 1;
+    return (
+        tweet.user.id === archillectID &&
+        !tweet.hasOwnProperty("retweeted_status") &&
+        tweet.entities.media.length === 1
+    );
 }
 
 async function getVisionResult(image) {
@@ -61,12 +64,15 @@ function getRelatedKeywords(visionResult) {
 function isValidKeyword(keyword) {
     const bannedKeywords = config.bot.banned_keywords;
     const urlRegex = new RegExp(config.bot.url_regex);
-    return !bannedKeywords.includes(keyword.toLowerCase()) && !urlRegex.test(keyword);
+    return (
+        !bannedKeywords.includes(keyword.toLowerCase()) &&
+        !urlRegex.test(keyword)
+    );
 }
 
 function handleResponse(archillectTweetId, response) {
     const responsesQueueMaxLength = config.bot.responses_queue_max_length;
-    responsesQueue.push({tweet_id: archillectTweetId, response: response});
+    responsesQueue.push({ tweet_id: archillectTweetId, response: response });
     console.log("Added to queue: " + response);
     if (responsesQueue.length === responsesQueueMaxLength) {
         postAllResponses();
@@ -80,7 +86,7 @@ function postAllResponses() {
             status: response.response,
             in_reply_to_status_id: response.tweet_id
         };
-        twit.post('statuses/update', params, responseCallback);
+        twit.post("statuses/update", params, responseCallback);
     }
 }
 

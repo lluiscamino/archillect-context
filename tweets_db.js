@@ -15,7 +15,7 @@ function insert(archillectTweet, visionResult) {
         archillectTweet.id_str,                             // Tweet ID
         Math.floor(new Date().getTime() / 1000),            // Date
         JSON.stringify(visionResult.labelAnnotations)       // Labels
-    ]
+    ];
     const csvRow = new CSV([row]).encode();
     fs.appendFile(fileName, csvRow + "\n", () => {});
 }
