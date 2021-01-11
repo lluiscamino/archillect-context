@@ -23,6 +23,7 @@
   "homepage": "https://github.com/lluiscamino/archillect-context-bot#readme",
   "dependencies": {
     "@google-cloud/vision": "^2.1.2",
+    "comma-separated-values": "^3.6.4",
     "nodemailer": "^6.4.17",
     "twit": "^2.2.11"
   }

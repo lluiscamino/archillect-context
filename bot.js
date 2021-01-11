@@ -1,5 +1,6 @@
 const Twit = require('twit');
 const vision = require('@google-cloud/vision');
+const database = require('./tweets_db');
 const alertSender = require('./alertmailer');
 const config = require('./config.json');
 process.env['GOOGLE_APPLICATION_CREDENTIALS'] = config.google_vision_api.application_credentials_file;
@@ -12,21 +13,28 @@ const responsesQueue = [];
 let archillectTweets = 0;
 
 sendStartupNotification();
-stream.on('tweet', tweet => {
-    handleArchillectTweet(tweet);
-});
+streamTweets();
 
 function sendStartupNotification() {
     alertSender.mail("Bot started", "Archillect Context started");
+}
+
+function streamTweets() {
+    stream.on('tweet', tweet => {
+        handleArchillectTweet(tweet);
+    });
 }
 
 async function handleArchillectTweet(tweet) {
     if (!isValidArchillectTweet(tweet)) return;
     if (archillectTweets++ % 2 != 0) return;
     const image = tweet.entities.media[0].media_url_https;
-    const keywords = await getRelatedKeywords(image);
+    const visionResult = await getVisionResult(image);
+    const keywords = getRelatedKeywords(visionResult);
+    if (keywords.length === 0) return;
     const response = `.@archillect Related keywords: "${keywords.join(', ')}"`;
     handleResponse(tweet.id_str, response);
+    database.insert(tweet, visionResult);
 }
 
 function isValidArchillectTweet(tweet) {
@@ -35,10 +43,14 @@ function isValidArchillectTweet(tweet) {
     tweet.entities.media.length === 1;
 }
 
-async function getRelatedKeywords(image) {
-    const keywords = [];
+async function getVisionResult(image) {
     const [result] = await visionClient.labelDetection(image);
-    for (const label of result.labelAnnotations) {
+    return result;
+}
+
+function getRelatedKeywords(visionResult) {
+    const keywords = [];
+    for (const label of visionResult.labelAnnotations) {
         const keyword = label.description;
         if (!isValidKeyword(keyword)) continue;
         keywords.push(keyword);
