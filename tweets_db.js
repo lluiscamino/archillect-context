@@ -14,7 +14,7 @@ function insert(archillectTweet, visionResult) {
         archillectTweet.entities.media[0].media_url_https,  // Image
         archillectTweet.id_str,                             // Tweet ID
         Math.floor(new Date().getTime() / 1000),            // Date
-        JSON.stringify(visionResult.labelAnnotations)       // Labels
+        JSON.stringify(visionResult)                        // Labels
     ];
     const csvRow = new CSV([row]).encode();
     fs.appendFile(fileName, csvRow + "\n", () => {});

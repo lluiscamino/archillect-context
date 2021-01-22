@@ -47,13 +47,13 @@ function isValidArchillectTweet(tweet) {
 }
 
 async function getVisionResult(image) {
-    const [result] = await visionClient.labelDetection(image);
-    return result;
+    const [result] = await visionClient.webDetection(image);
+    return result.webDetection;
 }
 
 function getRelatedKeywords(visionResult) {
     const keywords = [];
-    for (const label of visionResult.labelAnnotations) {
+    for (const label of visionResult.webEntities) {
         const keyword = label.description;
         if (!isValidKeyword(keyword)) continue;
         keywords.push(keyword);
@@ -65,6 +65,7 @@ function isValidKeyword(keyword) {
     const bannedKeywords = config.bot.banned_keywords;
     const urlRegex = new RegExp(config.bot.url_regex);
     return (
+        keyword !== "" &&
         !bannedKeywords.includes(keyword.toLowerCase()) &&
         !urlRegex.test(keyword)
     );
