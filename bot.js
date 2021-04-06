@@ -28,7 +28,7 @@ function streamTweets() {
 
 async function handleArchillectTweet(tweet) {
     if (!isValidArchillectTweet(tweet)) return;
-    if (archillectTweets++ % 2 != 0) return;
+    if (archillectTweets++ % 2 !== 0) return;
     const image = tweet.entities.media[0].media_url_https;
     const visionResult = await getVisionResult(image);
     const keywords = getRelatedKeywords(visionResult);
