@@ -1,6 +1,7 @@
 const Twit = require("twit");
 const vision = require("@google-cloud/vision");
-const database = require("./tweets_db");
+const JsonDB = require("node-json-db").JsonDB;
+const JsonDBConfig = require("node-json-db/dist/lib/JsonDBConfig").Config;
 const alertSender = require("./alertmailer");
 const config = require("./config.json");
 process.env["GOOGLE_APPLICATION_CREDENTIALS"] =
@@ -10,6 +11,7 @@ const twit = new Twit(config.twitter);
 const visionClient = new vision.ImageAnnotatorClient();
 const archillectID = config.twitter.archillect_id;
 const stream = twit.stream("statuses/filter", { follow: archillectID });
+const database = new JsonDB(new JsonDBConfig("tweets", true, false, "/"));
 const responsesQueue = [];
 let archillectTweets = 0;
 
@@ -34,8 +36,8 @@ async function handleArchillectTweet(tweet) {
     const keywords = getRelatedKeywords(visionResult);
     if (keywords.length === 0) return;
     const response = `.@archillect Related keywords: "${keywords.join(", ")}"`;
+    saveTweetToDatabase(tweet, visionResult);
     handleResponse(tweet.id_str, response);
-    database.insert(tweet, visionResult);
 }
 
 function isValidArchillectTweet(tweet) {
@@ -69,6 +71,18 @@ function isValidKeyword(keyword) {
         !bannedKeywords.includes(keyword.toLowerCase()) &&
         !urlRegex.test(keyword)
     );
+}
+
+function saveTweetToDatabase(tweet, visionResult) {
+    const date = new Date(tweet.created_at);
+    const savedTweet = {
+        id: tweet.id_str,
+        image: tweet.entities.media[0].media_url_https,
+        date: date,
+        vision: visionResult
+    }
+    const dataPath = `/${date.getFullYear()}/${(date.getMonth() + 1)}/${date.getDate()}/${tweet.id_str}`;
+    database.push(dataPath, savedTweet);
 }
 
 function handleResponse(archillectTweetId, response) {
