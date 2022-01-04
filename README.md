@@ -1,3 +1,11 @@
+<div align="center">
+ 
+  [![Node.js CI status](https://github.com/lluiscamino/archillect-context/actions/workflows/node.js.yml/badge.svg)](https://github.com/lluiscamino/archillect-context/actions/workflows/node.js.yml)
+ [![CodeQl analysis status](https://github.com/lluiscamino/archillect-context/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/lluiscamino/archillect-context/actions/workflows/codeql-analysis.yml)
+ [![Follow @archicontext on Twitter](https://img.shields.io/twitter/follow/archicontext?style=social)](https://twitter.com/archicontext)
+ 
+</div>
+
 # Archillect Context Bot
 Source code for the Twitter bot [@archicontext](https://twitter.com/archicontext).
 
