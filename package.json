@@ -2,10 +2,13 @@
   "name": "archillect-context",
   "version": "1.0.0",
   "description": "Context provider for @archillect posts",
-  "main": "bot.js",
+  "main": "dist/src/main.js",
   "scripts": {
-    "start": "node bot.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && node dist/src/main.js",
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "lint": "eslint --fix --ext .ts .",
+    "depgraph": "depcruise --include-only \"^src\" --output-type dot src | dot -T svg > dependencygraph.svg"
   },
   "repository": {
     "type": "git",
@@ -23,9 +26,21 @@
   },
   "homepage": "https://github.com/lluiscamino/archillect-context-bot#readme",
   "dependencies": {
-    "@google-cloud/vision": "^2.1.2",
-    "node-json-db": "^1.3.0",
-    "nodemailer": "^6.4.17",
+    "@google-cloud/vision": "^2.4.1",
     "twit": "^2.2.11"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "@types/twit": "^2.2.30",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "dependency-cruiser": "^11.2.1",
+    "eslint": "^8.6.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.4.5",
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.2",
+    "typescript": "^4.5.4"
   }
 }
