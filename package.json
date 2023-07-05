@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/lluiscamino/archillect-context-bot#readme",
   "dependencies": {
-    "@google-cloud/vision": "^2.4.1",
+    "@google-cloud/vision": "^3.1.4",
     "twit": "^2.2.11"
   },
   "devDependencies": {
